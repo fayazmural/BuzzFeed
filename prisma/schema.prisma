@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL") // uses connection pooling
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id                    String         @id
+  userName              String         @unique
+  displayName           String
+  email                 String?        @unique
+  passwordHash          String?
+  googleId              String?        @unique
+  avatarUrl             String?
+  bio                   String?
+  sessions              Session[]
+  createdAt             DateTime       @default(now())
+  posts                 Post[]
+  following             Follow[]       @relation("Following")
+  followers             Follow[]       @relation("Followers")
+  likes                 Like[]
+  bookmarks             BookMark[]
+  comments              Comment[]
+  receivedNotifications Notification[] @relation("Recipient")
+  issuedNotifications   Notification[] @relation("Issuer")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Post {
+  id                  String         @id @default(cuid())
+  content             String
+  userId              String
+  user                User           @relation(references: [id], fields: [userId], onDelete: Cascade)
+  createdAt           DateTime       @default(now())
+  attachments         Media[]
+  likes               Like[]
+  bookmarks           BookMark[]
+  comments            Comment[]
+  linkedNotifications Notification[]
+
+  @@map("posts")
+}
+
+model Follow {
+  followerId  String
+  follower    User   @relation("Following", references: [id], fields: [followerId], onDelete: Cascade)
+  followingId String
+  following   User   @relation("Followers", references: [id], fields: [followingId], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  postId    String?
+  post      Post?     @relation(references: [id], fields: [postId], onDelete: SetNull)
+  type      MediaType
+  url       String
+  createdAt DateTime  @default(now())
+
+  @@map("post_media")
+}
+
+model Like {
+  userId String
+  user   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+  postId String
+  post   Post   @relation(references: [id], fields: [postId], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("likes")
+}
+
+model BookMark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(references: [id], fields: [postId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@map("bookmarks")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(references: [id], fields: [postId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("comments")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  recipientId String
+  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  issuerId    String
+  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+  postId      String?
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  read        Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum NotificationType {
+  LIKE
+  FOLLOW
+  COMMENT
+}

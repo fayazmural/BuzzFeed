@@ -1,0 +1,38 @@
+import { comment } from "postcss";
+import { z } from "zod";
+
+const requiredString = z.string().trim().min(1, "Required");
+
+export const signUpSchema = z.object({
+  email: requiredString.email("Invaild email address"),
+  userName: requiredString.regex(
+    /^[a-zA-Z0-9_-]+$/,
+    "Only letters, numbers, - and _ allowed",
+  ),
+  password: requiredString.min(8, "Must be atleast 8 characters"),
+});
+
+export type SignUp = z.infer<typeof signUpSchema>;
+
+export const loginSchema = z.object({
+  userName: requiredString,
+  password: requiredString,
+});
+
+export type Login = z.infer<typeof loginSchema>;
+
+export const createPostSchema = z.object({
+  content: requiredString,
+  mediaIds: z.array(z.string()).max(5, "Cannot have more than 5 attachments"),
+});
+
+export const updateUserProfileSchema = z.object({
+  displayName: requiredString,
+  bio: z.string().max(1000, "Must be less than 1000 characters"),
+});
+
+export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
+
+export const createCommentSchema = z.object({
+  content: requiredString,
+});
