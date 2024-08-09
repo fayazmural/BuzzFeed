@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
     const searchQuery = q.split(" ").join(" & ");
 
-    const pageSize = 10;
+    const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     const { user } = await validateRequest();
 

@@ -53,7 +53,7 @@ export default function Post({ post }: PostProps) {
         {post.userId === user.id && (
           <PostMoreButton
             post={post}
-            className="opacity-0 transition-opacity group-hover/post:opacity-100"
+            className="opacity-100 md:opacity-0 transition-opacity md:group-hover/post:opacity-100"
           />
         )}
       </div>
