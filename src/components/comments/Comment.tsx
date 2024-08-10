@@ -5,6 +5,7 @@ import Link from "next/link";
 import UserAvatar from "../UserAvatar";
 import UserTooltip from "../UserTooltip";
 import CommentMoreButton from "./CommentMoreButton";
+import Linkify from "../Linkify";
 // import CommentMoreButton from "./CommentMoreButton";
 
 interface CommentProps {
@@ -37,12 +38,14 @@ export default function Comment({ comment }: CommentProps) {
             {formatRelativeDate(comment.createdAt)}
           </span>
         </div>
-        <div>{comment.content}</div>
+        <Linkify>
+          <div>{comment.content}</div>
+        </Linkify>
       </div>
       {comment.user.id === user.id && (
         <CommentMoreButton
           comment={comment}
-          className="ms-auto opacity-0 transition-opacity group-hover/comment:opacity-100"
+          className="ms-auto opacity-100 transition-opacity md:opacity-0 md:group-hover/comment:opacity-100"
         />
       )}
     </div>
