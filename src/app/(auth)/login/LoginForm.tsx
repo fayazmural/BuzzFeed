@@ -44,9 +44,9 @@ export default function LoginForm() {
           name="userName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>UserName</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="UserName" {...field} />
+                <Input placeholder="Username" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

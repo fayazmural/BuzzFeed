@@ -40,7 +40,7 @@ export async function WhoToFollow() {
   });
 
   return (
-    <div className="space-y-3 rounded-2xl bg-card p-5 shadow-sm">
+    <div className="max-h-80 min-h-fit space-y-3 overflow-y-auto rounded-2xl bg-card p-5 shadow-sm">
       <div className="text-xl font-bold">Who To Follow</div>
       {usersToFollow.map((user) => {
         return (
@@ -104,7 +104,7 @@ const getTrendingTopics = unstable_cache(
 export async function TrendingTopics() {
   const trendingTopics = await getTrendingTopics();
   return (
-    <div className="space-y-5 rounded-2xl bg-card p-5 shadow-sm">
+    <div className="max-h-72 min-h-fit space-y-5 overflow-y-auto rounded-2xl bg-card p-5 shadow-sm">
       <div className="text-xl font-bold">Trending</div>
       {trendingTopics.map(({ hashtag, count }) => {
         const title = hashtag.split("#")[1];
